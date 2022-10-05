@@ -125,7 +125,7 @@ function updateFooter(lb: LbKey): void {
     side = "right";
   }
 
-  if (!Auth.currentUser) {
+  if (!Auth?.currentUser) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;"></>
@@ -255,10 +255,10 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
 
   const snap = DB.getSnapshot();
 
-  const avatarUrlPromises = currentData[lb].map((entry) => {
+  const avatarUrlPromises = currentData[lb].map(async (entry) => {
     const isCurrentUser =
-      Auth.currentUser &&
-      entry.uid === Auth.currentUser.uid &&
+      Auth?.currentUser &&
+      entry.uid === Auth?.currentUser.uid &&
       snap.discordAvatar &&
       snap.discordId;
 
@@ -322,7 +322,9 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     }</td>
     <td>
     <div class="avatarNameBadge">${avatar}
-      <span class="entryName" uid=${entry.uid}>${entry.name}</span>
+      <a href="${location.origin}/profile/${
+      entry.uid
+    }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
     </div>
     </td>
@@ -427,7 +429,7 @@ async function update(): Promise<void> {
 
   const timeModes = ["15", "60"];
 
-  const leaderboardRequests = timeModes.map((mode2) => {
+  const leaderboardRequests = timeModes.map(async (mode2) => {
     return Ape.leaderboards.get({
       language: currentLanguage,
       mode: "time",
@@ -436,9 +438,9 @@ async function update(): Promise<void> {
     });
   });
 
-  if (Auth.currentUser) {
+  if (Auth?.currentUser) {
     leaderboardRequests.push(
-      ...timeModes.map((mode2) => {
+      ...timeModes.map(async (mode2) => {
         return Ape.leaderboards.getRank({
           language: currentLanguage,
           mode: "time",
@@ -571,7 +573,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 
 export function show(): void {
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
-    if (Auth.currentUser) {
+    if (Auth?.currentUser) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
       );
